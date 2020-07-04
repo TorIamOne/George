@@ -1,7 +1,7 @@
 import React, { useState, FormEvent } from "react";
 import { Segment, Form, Button } from "semantic-ui-react";
 import { IToDo } from "../../../app/models/toDo";
-//import { v4 as uuid } from "uuid";
+import { v4 as uuid } from "uuid";
 
 interface IProps {
   toDo: IToDo;
@@ -9,15 +9,15 @@ interface IProps {
   createToDo: (toDo: IToDo) => void;
   editToDo: (toDo: IToDo) => void;
   setEditMode: (editMode: boolean) => void;
+  submitting: boolean;
 }
 
 const ToDoForm: React.FC<IProps> = ({
   editToDo,
   createToDo,
   setEditMode,
-  //setSelectedToDo,
   toDo: initialFormState,
-  //setSelectedToDo,
+  submitting,
 }) => {
   const intializeForm = () => {
     if (initialFormState) {
@@ -28,14 +28,14 @@ const ToDoForm: React.FC<IProps> = ({
         title: "",
         description: "",
         category: 0,
-        createdDate: Date(),
+        createdDate: "",
         dueDate: "",
         city: "",
         location: "",
         createdBy: "",
         assignedTo: 0,
-        status: false,
-        received: false,
+        status: 0,
+        received: 0,
         urgency: 0,
       };
     }
@@ -53,17 +53,25 @@ const ToDoForm: React.FC<IProps> = ({
     if (toDo.id.length === 0) {
       let newToDo = {
         ...toDo,
-        //id: uuid(),
+        id: uuid(),
       };
       createToDo(newToDo);
+      console.log(newToDo);
     } else {
       editToDo(toDo);
+      console.log(toDo);
     }
-    //console.log(toDo);
   };
   return (
     <Segment>
       <Form onSubmit={handleSubmit}>
+        {/* <Form.Input
+          onChange={handleInputChange}
+          name="id"
+          placeholder="Id"
+          visible="false"
+          value={uuid()}
+        /> */}
         <Form.Input
           onChange={handleInputChange}
           name="title"
@@ -85,7 +93,7 @@ const ToDoForm: React.FC<IProps> = ({
         <Form.Input
           onChange={handleInputChange}
           name="dueDate"
-          type="datetime-local"
+          //type="datetime-local"
           placeholder="DueDate"
           value={toDo.dueDate}
         />
@@ -133,6 +141,7 @@ const ToDoForm: React.FC<IProps> = ({
         />
         {/* <Button.Group widths="4"> */}
         <Button
+          loading={submitting}
           onClick={() => setEditMode(true)}
           basic
           color="blue"

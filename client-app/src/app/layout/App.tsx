@@ -1,18 +1,30 @@
-import React, { useState, useEffect, Fragment } from "react";
+import React, {
+  useState,
+  useEffect,
+  Fragment,
+  SyntheticEvent,
+  useContext,
+} from "react";
 import { Container } from "semantic-ui-react";
-import axios from "axios";
 import { IToDo } from "../models/toDo";
 import NavBar from "../../features/nav/NavBar";
 import ToDoDashboard from "../../features/todos/dashboard/ToDoDashboard";
+import agent from "../api/agent";
+import LoadingComponent from "./LoadingComponent";
+import ToDoStore from "../stores/toDoStore";
 
 // interface IState {
 //   toDos: IToDo[];
 // }
 
 const App = () => {
+  const toDoStore = useContext(ToDoStore);
   const [toDos, setToDos] = useState<IToDo[]>([]);
   const [selectedToDo, setSelectedToDo] = useState<IToDo | null>(null);
   const [editMode, setEditMode] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
+  const [target, setTarget] = useState("");
 
   //const handleSelectForm = (id: string) => {};
 
@@ -22,38 +34,61 @@ const App = () => {
   };
 
   const handleOpenCreateToDoForm = () => {
+    setSubmitting(true);
     setSelectedToDo(null);
     setEditMode(true);
-    //setSelectedToDo(null);
+    setSubmitting(false);
   };
 
   const handleCreateToDo = (toDo: IToDo) => {
-    setToDos([...toDos, toDo]);
-    setSelectedToDo(toDo);
-    setEditMode(false);
+    setSubmitting(true);
+    agent.ToDos.create(toDo)
+      .then(() => {
+        setToDos([...toDos, toDo]);
+        setSelectedToDo(toDo);
+        setEditMode(false);
+      })
+      .then(() => setSubmitting(false));
   };
-  const handleRemoveToDo = (id: string) => {
-    setToDos([...toDos.filter((a) => a.id !== id)]);
-    setEditMode(false);
+  const handleRemoveToDo = (
+    event: SyntheticEvent<HTMLButtonElement>,
+    id: string
+  ) => {
+    setSubmitting(true);
+    setTarget(event.currentTarget.name);
+    agent.ToDos.delete(id)
+      .then(() => {
+        setToDos([...toDos.filter((a) => a.id !== id)]);
+        setEditMode(false);
+      })
+      .then(() => setSubmitting(false));
   };
 
   const handleEditToDo = (toDo: IToDo) => {
-    setToDos([...toDos.filter((a) => a.id !== toDo.id), toDo]);
-    setSelectedToDo(toDo);
-    setEditMode(false);
+    setSubmitting(true);
+    agent.ToDos.update(toDo)
+      .then(() => {
+        setToDos([...toDos.filter((a) => a.id !== toDo.id), toDo]);
+        setSelectedToDo(toDo);
+        setEditMode(false);
+      })
+      .then(() => setSubmitting(false));
   };
 
   useEffect(() => {
-    axios.get<IToDo[]>("http://localhost:5000/api/todos").then((response) => {
-      let toDos: IToDo[] = [];
-      response.data.forEach((toDo) => {
-        toDo.dueDate = toDo.dueDate.split(".")[0];
-        toDos.push(toDo);
-      });
-      setToDos(toDos); //(response.data);
-    });
+    agent.ToDos.list()
+      .then((response) => {
+        let toDos: IToDo[] = [];
+        response.forEach((toDo) => {
+          toDo.dueDate = toDo.dueDate.split(".")[0];
+          toDos.push(toDo);
+        });
+        setToDos(toDos); //(response.data);
+      })
+      .then(() => setLoading(false));
   }, []);
 
+  if (loading) return <LoadingComponent content="Loading..." />;
   // componentDidMount() {
   //   axios.get<IToDo[]>("http://localhost:5000/api/todos").then((response) => {
   //     this.setState({
@@ -74,12 +109,14 @@ const App = () => {
           toDos={toDos}
           selectToDo={handleSelectToDo}
           removeToDo={handleRemoveToDo}
+          target={target}
           selectedToDo={selectedToDo}
           editMode={editMode}
           setEditMode={setEditMode}
           setSelectedToDo={setSelectedToDo}
           createToDo={handleCreateToDo}
           editToDo={handleEditToDo}
+          submitting={submitting}
         />
       </Container>
     </Fragment>

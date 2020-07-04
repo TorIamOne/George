@@ -9,7 +9,7 @@ export interface IToDo {
   location: string;
   createdBy: string;
   assignedTo: number;
-  status: boolean;
-  received: boolean;
+  status: number;
+  received: number;
   urgency: number;
 }

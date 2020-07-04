@@ -1,4 +1,4 @@
-import React from "react";
+import React, { SyntheticEvent } from "react";
 import { Card, Icon, Button } from "semantic-ui-react";
 import { IToDo } from "../../../app/models/toDo";
 
@@ -7,7 +7,9 @@ interface IProps {
   //selectedToDo: IToDo | null;
   setEditMode: (editMode: boolean) => void;
   setSelectedToDo: (selectedToDo: IToDo | null) => void;
-  removeToDo: (id: string) => void;
+  removeToDo: (e: SyntheticEvent<HTMLButtonElement>, id: string) => void;
+  submitting: boolean;
+  target: string;
 }
 
 const ToDoDetails: React.FC<IProps> = ({
@@ -15,6 +17,8 @@ const ToDoDetails: React.FC<IProps> = ({
   setEditMode,
   setSelectedToDo,
   removeToDo,
+  submitting,
+  target,
 }) => {
   return (
     //{toDo.map((toDo) => (
@@ -39,13 +43,17 @@ const ToDoDetails: React.FC<IProps> = ({
       <Card.Content extra>
         <Button.Group widths="3">
           <Button
+            name={toDo.id}
+            //loading={submitting}
             onClick={() => setEditMode(true)}
             basic
             color="blue"
             content="Edit"
           />
           <Button
-            onClick={() => removeToDo(toDo.id)}
+            name={toDo.id}
+            loading={target === toDo.id && submitting}
+            onClick={(e) => removeToDo(e, toDo.id)}
             basic
             color="red"
             content="Delete"

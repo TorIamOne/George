@@ -5,9 +5,10 @@ import { IToDo } from "../../../app/models/toDo";
 interface IProps {
   toDos: IToDo[];
   selectToDo: (id: string) => void;
+  submitting: boolean;
 }
 
-const ToDoList: React.FC<IProps> = ({ toDos, selectToDo }) => {
+const ToDoList: React.FC<IProps> = ({ toDos, selectToDo, submitting }) => {
   return (
     <Segment clearing>
       <Item.Group divided>
@@ -25,6 +26,7 @@ const ToDoList: React.FC<IProps> = ({ toDos, selectToDo }) => {
               </Item.Description>
               <Item.Extra>
                 <Button
+                  name={toDo.id}
                   onClick={() => selectToDo(toDo.id)}
                   floated="right"
                   content="Detaljer"

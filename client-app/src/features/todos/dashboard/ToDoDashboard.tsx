@@ -1,4 +1,4 @@
-import React from "react";
+import React, { SyntheticEvent } from "react";
 import { Grid, GridColumn } from "semantic-ui-react";
 import { IToDo } from "../../../app/models/toDo";
 import ToDoList from "./ToDoList";
@@ -14,7 +14,9 @@ interface IProps {
   setSelectedToDo: (selectedToDo: IToDo | null) => void;
   createToDo: (toDo: IToDo) => void;
   editToDo: (toDo: IToDo) => void;
-  removeToDo: (id: string) => void;
+  removeToDo: (e: SyntheticEvent<HTMLButtonElement>, id: string) => void;
+  submitting: boolean;
+  target: string;
 }
 const ToDoDashboard: React.FC<IProps> = ({
   toDos,
@@ -26,11 +28,17 @@ const ToDoDashboard: React.FC<IProps> = ({
   createToDo,
   editToDo,
   removeToDo,
+  submitting,
+  target,
 }) => {
   return (
     <Grid>
       <Grid.Column width={6}>
-        <ToDoList toDos={toDos} selectToDo={selectToDo} />
+        <ToDoList
+          toDos={toDos}
+          selectToDo={selectToDo}
+          submitting={submitting}
+        />
       </Grid.Column>
       <GridColumn width={10}>
         {selectedToDo && !editMode && (
@@ -39,6 +47,8 @@ const ToDoDashboard: React.FC<IProps> = ({
             setSelectedToDo={setSelectedToDo}
             setEditMode={setEditMode}
             removeToDo={removeToDo}
+            submitting={submitting}
+            target={target}
             //selectedToDo={selectedToDo}
           />
         )}
@@ -50,6 +60,7 @@ const ToDoDashboard: React.FC<IProps> = ({
             editToDo={editToDo}
             createToDo={createToDo}
             setEditMode={setEditMode}
+            submitting={submitting}
           />
         )}
       </GridColumn>
