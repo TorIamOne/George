@@ -1,17 +1,10 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Menu, Container, Button } from "semantic-ui-react";
+import ToDoStore from "../../app/stores/toDoStore";
+import { observer } from "mobx-react-lite";
 
-interface IProps {
-  openCreateToDoForm: () => void;
-  //setEditMode: (editMode: boolean) => void;
-  //setSelectedToDo: (selectedToDo: IToDo | null) => void;
-  //setEditMode: (false) => void;
-}
-
-export const NavBar: React.FC<IProps> = ({
-  openCreateToDoForm,
-  //setEditMode,
-}) => {
+export const NavBar: React.FC = () => {
+  const toDoStore = useContext(ToDoStore);
   return (
     <Menu fixed="top" inverted>
       <Container>
@@ -25,11 +18,15 @@ export const NavBar: React.FC<IProps> = ({
         </Menu.Item>
         <Menu.Item name="Oppgaver" />
         <Menu.Item name="Notater">
-          <Button onClick={openCreateToDoForm} positive content="Ny Oppgave" />
+          <Button
+            onClick={toDoStore.openCreateToDoForm}
+            positive
+            content="Ny Oppgave"
+          />
         </Menu.Item>
       </Container>
     </Menu>
   );
 };
 
-export default NavBar;
+export default observer(NavBar);

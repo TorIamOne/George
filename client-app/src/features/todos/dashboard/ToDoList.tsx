@@ -1,18 +1,15 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Item, Button, Label, Segment } from "semantic-ui-react";
-import { IToDo } from "../../../app/models/toDo";
+import { observer } from "mobx-react-lite";
+import ToDoStore from "../../../app/stores/toDoStore";
 
-interface IProps {
-  toDos: IToDo[];
-  selectToDo: (id: string) => void;
-  submitting: boolean;
-}
-
-const ToDoList: React.FC<IProps> = ({ toDos, selectToDo, submitting }) => {
+const ToDoList: React.FC = () => {
+  const toDoStore = useContext(ToDoStore);
+  const { toDosByDate, selectToDo } = toDoStore;
   return (
     <Segment clearing>
       <Item.Group divided>
-        {toDos.map((toDo) => (
+        {toDosByDate.map((toDo) => (
           // <List.Item key={toDo.id}>{toDo.title}</List.Item>
           <Item key={toDo.id}>
             <Item.Content>
@@ -42,4 +39,4 @@ const ToDoList: React.FC<IProps> = ({ toDos, selectToDo, submitting }) => {
   );
 };
 
-export default ToDoList;
+export default observer(ToDoList);

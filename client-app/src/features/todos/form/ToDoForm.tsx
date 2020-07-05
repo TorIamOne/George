@@ -1,24 +1,17 @@
-import React, { useState, FormEvent } from "react";
+import React, { useState, FormEvent, useContext } from "react";
 import { Segment, Form, Button } from "semantic-ui-react";
 import { IToDo } from "../../../app/models/toDo";
 import { v4 as uuid } from "uuid";
+import ToDoStore from "../../../app/stores/toDoStore";
+import { observer } from "mobx-react-lite";
 
 interface IProps {
   toDo: IToDo;
-  //setSelectedToDo: (selectedToDo: IToDo | null) => void;
-  createToDo: (toDo: IToDo) => void;
-  editToDo: (toDo: IToDo) => void;
-  setEditMode: (editMode: boolean) => void;
-  submitting: boolean;
 }
 
-const ToDoForm: React.FC<IProps> = ({
-  editToDo,
-  createToDo,
-  setEditMode,
-  toDo: initialFormState,
-  submitting,
-}) => {
+const ToDoForm: React.FC<IProps> = ({ toDo: initialFormState }) => {
+  const toDoStore = useContext(ToDoStore);
+  const { createToDo, editToDo, submitting, cancelFormOpen } = toDoStore;
   const intializeForm = () => {
     if (initialFormState) {
       return initialFormState;
@@ -28,7 +21,7 @@ const ToDoForm: React.FC<IProps> = ({
         title: "",
         description: "",
         category: 0,
-        createdDate: "",
+        createdDate: "2020-07-05T03:04",
         dueDate: "",
         city: "",
         location: "",
@@ -47,7 +40,6 @@ const ToDoForm: React.FC<IProps> = ({
   ) => {
     const { name, value } = event.currentTarget;
     setToDo({ ...toDo, [name]: value });
-    //console.log(event.currenTarget.);
   };
   const handleSubmit = () => {
     if (toDo.id.length === 0) {
@@ -62,16 +54,10 @@ const ToDoForm: React.FC<IProps> = ({
       console.log(toDo);
     }
   };
+
   return (
     <Segment>
       <Form onSubmit={handleSubmit}>
-        {/* <Form.Input
-          onChange={handleInputChange}
-          name="id"
-          placeholder="Id"
-          visible="false"
-          value={uuid()}
-        /> */}
         <Form.Input
           onChange={handleInputChange}
           name="title"
@@ -142,14 +128,14 @@ const ToDoForm: React.FC<IProps> = ({
         {/* <Button.Group widths="4"> */}
         <Button
           loading={submitting}
-          onClick={() => setEditMode(true)}
+          //onClick={() => setEditMode(true)}
           basic
           color="blue"
           content="Save"
           align="right"
         />
         <Button
-          onClick={() => setEditMode(false)}
+          onClick={() => cancelFormOpen()}
           basic
           color="grey"
           content="Cancel"
@@ -161,4 +147,4 @@ const ToDoForm: React.FC<IProps> = ({
   );
 };
 
-export default ToDoForm;
+export default observer(ToDoForm);
