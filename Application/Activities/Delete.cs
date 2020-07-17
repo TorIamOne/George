@@ -10,7 +10,7 @@ namespace Application.Activities
     {
         public class Command : IRequest
         {
-            public Guid Id { get; set; }
+            public string Id { get; set; }
         }
 
         public class Handler : IRequestHandler<Command>
@@ -28,7 +28,7 @@ namespace Application.Activities
                 if (activity == null)
                     throw new Exception("Could not find activity");
 
-                _context.Remove(activity);              
+                _context.Remove(activity);
 
                 var success = await _context.SaveChangesAsync() > 0;
 

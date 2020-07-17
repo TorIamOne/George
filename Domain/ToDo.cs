@@ -4,7 +4,7 @@ namespace Domain
 {
     public class ToDo
     {
-        public Guid Id { get; set; }
+        public string Id { get; set; }
         public string Title { get; set; }
         public string Description { get; set; }
         public int Category { get; set; }
@@ -14,8 +14,8 @@ namespace Domain
         public string Location { get; set; }
         public string CreatedBy { get; set; }
         public int AssignedTo { get; set; }
-        public bool Status { get; set; }
-        public bool Received { get; set; }
+        public int Status { get; set; }
+        public int Received { get; set; }
         public int Urgency { get; set; }
 
     }

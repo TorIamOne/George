@@ -11,7 +11,7 @@ namespace Application.ToDos
     {
         public class Query : IRequest<ToDo>
         {
-            public Guid Id { get; set; }
+            public string Id { get; set; }
         }
 
         public class Handler : IRequestHandler<Query, ToDo>

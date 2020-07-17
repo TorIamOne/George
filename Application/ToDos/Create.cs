@@ -11,7 +11,7 @@ namespace Application.ToDos
     {
         public class Command : IRequest
         {
-            //public Guid Id { get; set; }
+            public string Id { get; set; }
             public string Title { get; set; }
             public string Description { get; set; }
             public int Category { get; set; }
@@ -21,8 +21,8 @@ namespace Application.ToDos
             public string Location { get; set; }
             public string CreatedBy { get; set; }
             public int AssignedTo { get; set; }
-            public bool Status { get; set; }
-            public bool Received { get; set; }
+            public int Status { get; set; }
+            public int Received { get; set; }
             public int Urgency { get; set; }
         }
 
@@ -38,7 +38,7 @@ namespace Application.ToDos
             {
                 var todo = new ToDo
                 {
-                    //Id = request.Id,
+                    Id = request.Id,
                     Title = request.Title,
                     Description = request.Description,
                     Category = request.Category,

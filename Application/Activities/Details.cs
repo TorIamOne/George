@@ -11,7 +11,7 @@ namespace Application.Activities
     {
         public class Query : IRequest<Activity>
         {
-            public Guid Id { get; set; }
+            public string Id { get; set; }
         }
 
         public class Handler : IRequestHandler<Query, Activity>

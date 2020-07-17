@@ -1,5 +1,10 @@
-﻿using Microsoft.AspNetCore;
+﻿using System;
+using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Persistence;
 
 namespace API
 {
@@ -12,7 +17,7 @@ namespace API
             // using (var scope = host.Services.CreateScope())
             // {
             //     var services = scope.ServiceProvider;
-            //     try 
+            //     try
 
             //     {
             //         var context = services.GetRequiredService<DataContext>();
