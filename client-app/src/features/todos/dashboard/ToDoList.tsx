@@ -2,10 +2,11 @@ import React, { useContext } from "react";
 import { Item, Button, Label, Segment } from "semantic-ui-react";
 import { observer } from "mobx-react-lite";
 import ToDoStore from "../../../app/stores/toDoStore";
+import { Link } from "react-router-dom";
 
 const ToDoList: React.FC = () => {
   const toDoStore = useContext(ToDoStore);
-  const { toDosByDate, selectToDo } = toDoStore;
+  const { toDosByDate } = toDoStore;
   return (
     <Segment clearing>
       <Item.Group divided>
@@ -24,7 +25,9 @@ const ToDoList: React.FC = () => {
               <Item.Extra>
                 <Button
                   name={toDo.id}
-                  onClick={() => selectToDo(toDo.id)}
+                  //onClick={() => selectToDo(toDo.id)}
+                  as={Link}
+                  to={`/todos/${toDo.id}`}
                   floated="right"
                   content="Detaljer"
                   color="grey"

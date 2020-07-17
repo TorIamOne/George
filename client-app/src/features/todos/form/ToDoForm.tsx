@@ -1,39 +1,61 @@
-import React, { useState, FormEvent, useContext } from "react";
+import React, { useState, FormEvent, useContext, useEffect } from "react";
 import { Segment, Form, Button } from "semantic-ui-react";
 import { IToDo } from "../../../app/models/toDo";
 import { v4 as uuid } from "uuid";
 import ToDoStore from "../../../app/stores/toDoStore";
 import { observer } from "mobx-react-lite";
+import { RouteComponentProps } from "react-router-dom";
 
-interface IProps {
-  toDo: IToDo;
+interface DetailParams {
+  id: string;
 }
 
-const ToDoForm: React.FC<IProps> = ({ toDo: initialFormState }) => {
+const ToDoForm: React.FC<RouteComponentProps<DetailParams>> = ({
+  match,
+  history,
+}) => {
   const toDoStore = useContext(ToDoStore);
-  const { createToDo, editToDo, submitting, cancelFormOpen } = toDoStore;
-  const intializeForm = () => {
-    if (initialFormState) {
-      return initialFormState;
-    } else {
-      return {
-        id: "",
-        title: "",
-        description: "",
-        category: 0,
-        createdDate: "2020-07-05T03:04",
-        dueDate: "",
-        city: "",
-        location: "",
-        createdBy: "",
-        assignedTo: 0,
-        status: 0,
-        received: 0,
-        urgency: 0,
-      };
+  const {
+    createToDo,
+    editToDo,
+    submitting,
+    selectedToDo: initialFormState,
+    loadToDo,
+    clearSelectedToDo,
+  } = toDoStore;
+
+  const [toDo, setToDo] = useState<IToDo>({
+    id: "",
+    title: "",
+    description: "",
+    category: 0,
+    createdDate: "2020-07-05T03:04",
+    dueDate: "",
+    city: "",
+    location: "",
+    createdBy: "",
+    assignedTo: 0,
+    status: 0,
+    received: 0,
+    urgency: 0,
+  });
+
+  useEffect(() => {
+    if (match.params.id && toDo.id.length === 0) {
+      loadToDo(match.params.id).then(
+        () => initialFormState && setToDo(initialFormState)
+      );
     }
-  };
-  const [toDo, setToDo] = useState<IToDo>(intializeForm);
+    return () => {
+      clearSelectedToDo();
+    };
+  }, [
+    loadToDo,
+    clearSelectedToDo,
+    match.params.id,
+    initialFormState,
+    toDo.id.length,
+  ]);
 
   const handleInputChange = (
     event: FormEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -47,10 +69,10 @@ const ToDoForm: React.FC<IProps> = ({ toDo: initialFormState }) => {
         ...toDo,
         id: uuid(),
       };
-      createToDo(newToDo);
+      createToDo(newToDo).then(() => history.push(`/todos/${newToDo.id}`));
       console.log(newToDo);
     } else {
-      editToDo(toDo);
+      editToDo(toDo).then(() => history.push(`/todos/${toDo.id}`));
       console.log(toDo);
     }
   };
@@ -132,10 +154,11 @@ const ToDoForm: React.FC<IProps> = ({ toDo: initialFormState }) => {
           basic
           color="blue"
           content="Save"
+          type="submit"
           align="right"
         />
         <Button
-          onClick={() => cancelFormOpen()}
+          onClick={() => history.push("/todos")}
           basic
           color="grey"
           content="Cancel"

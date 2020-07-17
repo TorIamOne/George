@@ -1,28 +1,26 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import { Grid, GridColumn } from "semantic-ui-react";
 import ToDoList from "./ToDoList";
-import ToDoDetails from "../details/ToDoDetails";
-import ToDoForm from "../form/ToDoForm";
 import { observer } from "mobx-react-lite";
+import LoadingComponent from "../../../app/layout/LoadingComponent";
 import ToDoStore from "../../../app/stores/toDoStore";
 
 const ToDoDashboard: React.FC = () => {
   const toDoStore = useContext(ToDoStore);
-  const { editMode, selectedToDo } = toDoStore;
 
+  useEffect(() => {
+    toDoStore.loadToDos();
+  }, [toDoStore]);
+
+  if (toDoStore.loadingInitial)
+    return <LoadingComponent content="Loading..." />;
   return (
     <Grid>
       <Grid.Column width={6}>
         <ToDoList />
       </Grid.Column>
       <GridColumn width={10}>
-        {selectedToDo && !editMode && <ToDoDetails />}
-        {editMode && (
-          <ToDoForm
-            key={(selectedToDo && selectedToDo.id) || 0}
-            toDo={selectedToDo!}
-          />
-        )}
+        <h2>Tasks</h2>
       </GridColumn>
     </Grid>
   );

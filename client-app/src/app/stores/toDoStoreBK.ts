@@ -1,25 +1,34 @@
-import { observable, action, computed, configure, runInAction } from "mobx";
+import {
+  observable,
+  action,
+  computed,
+  configure,
+  runInAction,
+  decorate,
+} from "mobx";
 import { createContext, SyntheticEvent } from "react";
 import { IToDo } from "../models/toDo";
 import agent from "../api/agent";
 
-configure({ enforceActions: "always" });
+//configure({ enforceActions: "always" });
 
 class ToDoStore {
-  @observable toDoRegistry = new Map();
-  @observable selectedToDo: IToDo | null = null;
-  @observable loadingInitial = false;
-  @observable submitting = false;
-  @observable target = "";
+  toDoRegistry = new Map();
+  toDos: IToDo[] = [];
+  selectedToDo: IToDo | undefined;
+  loadingInitial = false;
+  editMode = false;
+  submitting = false;
+  target = "";
 
-  @computed get toDosByDate() {
+  get toDosByDate() {
     //return this.toDos.sort(
     return Array.from(this.toDoRegistry.values()).sort(
       (a, b) => Date.parse(a.dueDate) - Date.parse(b.dueDate)
     );
   }
 
-  @action loadToDos = async () => {
+  loadToDos = async () => {
     this.loadingInitial = true;
     try {
       const toDos = await agent.ToDos.list();
@@ -38,40 +47,12 @@ class ToDoStore {
       });
     }
   };
-  @action loadToDo = async (id: string) => {
-    let toDo = this.getToDo(id);
-    if (toDo) {
-      this.selectedToDo = toDo;
-    } else {
-      this.loadingInitial = true;
-      try {
-        toDo = await agent.ToDos.details(id);
-        runInAction("getting tasks. No id found", () => {
-          this.selectedToDo = toDo;
-          this.loadingInitial = false;
-        });
-      } catch (error) {
-        runInAction("get task errors", () => {
-          this.loadingInitial = false;
-          console.log(error);
-        });
-      }
-    }
-  };
-
-  @action clearSelectedToDo = () => {
-    this.selectedToDo = null;
-  };
-
-  getToDo = (id: string) => {
-    return this.toDoRegistry.get(id);
-  };
-
-  @action openCreateToDoForm = () => {
+  openCreateToDoForm = () => {
     this.loadingInitial = true;
     try {
       runInAction("loading toDos", () => {
-        this.selectedToDo = null;
+        this.selectedToDo = undefined;
+        this.editMode = true;
         this.loadingInitial = false;
       });
     } catch (error) {
@@ -82,12 +63,14 @@ class ToDoStore {
     }
   };
 
-  @action createToDo = async (toDo: IToDo) => {
+  createToDo = async (toDo: IToDo) => {
     this.submitting = true;
     try {
       await agent.ToDos.create(toDo);
       runInAction("loading toDos", () => {
         this.toDoRegistry.set(toDo.id, toDo);
+        //this.toDos.push(toDo);
+        this.editMode = false;
         this.submitting = false;
       });
     } catch (error) {
@@ -98,13 +81,29 @@ class ToDoStore {
     }
   };
 
-  @action editToDo = async (toDo: IToDo) => {
+  openEditForm = (id: string) => {
+    this.selectedToDo = this.toDoRegistry.get(id);
+    this.editMode = true;
+  };
+
+  cancelFormOpen = () => {
+    //this.selectedToDo = undefined;
+    this.editMode = false;
+  };
+
+  cancelSelectedForm = () => {
+    this.selectedToDo = undefined;
+    //this.editMode = false;
+  };
+
+  editToDo = async (toDo: IToDo) => {
     this.submitting = true;
     try {
       await agent.ToDos.update(toDo);
       runInAction("loading toDos", () => {
         this.toDoRegistry.set(toDo.id, toDo);
         this.selectedToDo = toDo;
+        this.editMode = false;
         this.submitting = false;
       });
     } catch (error) {
@@ -115,29 +114,50 @@ class ToDoStore {
     }
   };
 
-  @action removeToDo = async (
-    event: SyntheticEvent<HTMLButtonElement>,
-    id: string
-  ) => {
+  removeToDo = async (event: SyntheticEvent<HTMLButtonElement>, id: string) => {
     this.submitting = true;
     this.target = event.currentTarget.name;
     try {
       await agent.ToDos.delete(id);
       runInAction("deleting toDos", () => {
-        this.toDoRegistry.delete(id); //set(...toDos.filter((a) => a.id !== id));
+        this.selectedToDo = undefined;
         this.submitting = false;
-        this.selectedToDo = null;
+        this.toDoRegistry.delete(id); //set(...toDos.filter((a) => a.id !== id));
         this.target = "";
-        //history.push("/todos");
       });
     } catch (error) {
       runInAction("delete logging errors", () => {
         this.submitting = false;
+        this.editMode = false;
         this.target = "";
-        console.log("here " + error);
+        console.log(error);
       });
     }
   };
+  selectToDo = (id: string) => {
+    this.selectedToDo = this.toDoRegistry.get(id);
+    //this.selectedToDo = this.toDos.filter((a) => a.id === id)[0];
+    //this.selectedToDo = this.toDos.find((a) => a.id === id)[0];
+    this.editMode = false;
+  };
 }
-
+decorate(ToDoStore, {
+  toDoRegistry: observable,
+  toDos: observable,
+  selectedToDo: observable,
+  loadingInitial: observable,
+  editMode: observable,
+  submitting: observable,
+  target: observable,
+  toDosByDate: computed,
+  loadToDos: action,
+  openCreateToDoForm: action,
+  createToDo: action,
+  openEditForm: action,
+  cancelFormOpen: action,
+  cancelSelectedForm: action,
+  editToDo: action,
+  removeToDo: action,
+  selectToDo: action,
+});
 export default createContext(new ToDoStore());

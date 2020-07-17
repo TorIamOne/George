@@ -1,14 +1,13 @@
-import React, { useContext } from "react";
+import React from "react";
 import { Menu, Container, Button } from "semantic-ui-react";
-import ToDoStore from "../../app/stores/toDoStore";
 import { observer } from "mobx-react-lite";
+import { NavLink } from "react-router-dom";
 
 export const NavBar: React.FC = () => {
-  const toDoStore = useContext(ToDoStore);
   return (
     <Menu fixed="top" inverted>
       <Container>
-        <Menu.Item header>
+        <Menu.Item header as={NavLink} exact to="/">
           <img
             src="/assets/g33.png"
             alt="Resources3"
@@ -16,13 +15,9 @@ export const NavBar: React.FC = () => {
           />
           Resources3
         </Menu.Item>
-        <Menu.Item name="Oppgaver" />
+        <Menu.Item name="Oppgaver" as={NavLink} to="/todos" />
         <Menu.Item name="Notater">
-          <Button
-            onClick={toDoStore.openCreateToDoForm}
-            positive
-            content="Ny Oppgave"
-          />
+          <Button as={NavLink} to="/todoform" positive content="Ny Oppgave" />
         </Menu.Item>
       </Container>
     </Menu>

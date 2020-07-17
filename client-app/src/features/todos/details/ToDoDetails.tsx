@@ -1,19 +1,33 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import { Card, Icon, Button } from "semantic-ui-react";
 import { observer } from "mobx-react-lite";
 import ToDoStore from "../../../app/stores/toDoStore";
+import { RouteComponentProps, Link } from "react-router-dom";
+import LoadingComponent from "../../../app/layout/LoadingComponent";
 
-const ToDoDetails: React.FC = () => {
+interface DetailParams {
+  id: string;
+}
+const ToDoDetails: React.FC<RouteComponentProps<DetailParams>> = ({
+  match,
+  history,
+}) => {
   const toDoStore = useContext(ToDoStore);
   const {
     selectedToDo: toDo,
-    openEditForm,
-    cancelSelectedForm,
     submitting,
     target,
     removeToDo,
+    loadToDo,
+    loadingInitial,
   } = toDoStore;
 
+  useEffect(() => {
+    loadToDo(match.params.id);
+  }, [loadToDo, match.params.id]);
+
+  if (loadingInitial || !toDo)
+    return <LoadingComponent content="Loading tasks..." />;
   return (
     <Card fluid>
       <Card.Content header={toDo!.title} />
@@ -37,22 +51,22 @@ const ToDoDetails: React.FC = () => {
         <Button.Group widths="3">
           <Button
             name={toDo!.id}
-            //loading={submitting}
-            onClick={() => openEditForm(toDo!.id)}
+            as={Link}
+            to={`/manage/${toDo.id}`}
             basic
             color="blue"
             content="Edit"
           />
           <Button
             name={toDo!.id}
-            loading={target === toDo!.id && submitting}
-            onClick={(e) => removeToDo(e, toDo!.id)}
+            loading={target === toDo.id && submitting}
+            onClick={(e) => removeToDo(e, toDo.id)}
             basic
             color="red"
             content="Delete"
           />
           <Button
-            onClick={cancelSelectedForm}
+            onClick={() => history.push("/todos")}
             basic
             color="grey"
             content="Cancel"
