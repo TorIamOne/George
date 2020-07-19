@@ -16,7 +16,7 @@ const ToDoDashboard: React.FC = () => {
     return <LoadingComponent content="Loading..." />;
   return (
     <Grid>
-      <Grid.Column width={6}>
+      <Grid.Column width={8}>
         <ToDoList />
       </Grid.Column>
       <GridColumn width={10}>

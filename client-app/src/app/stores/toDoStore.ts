@@ -12,10 +12,26 @@ class ToDoStore {
   @observable submitting = false;
   @observable target = "";
 
+  //original code before all was refactored for looks*****important to note
+  // @computed get toDosByDate() {
+  //   return Array.from(this.toDoRegistry.values()).sort(
+  //     (a, b) => Date.parse(a.dueDate) - Date.parse(b.dueDate)
+  //   );
+  // }
   @computed get toDosByDate() {
-    //return this.toDos.sort(
-    return Array.from(this.toDoRegistry.values()).sort(
+    return this.groupToDosByDate(Array.from(this.toDoRegistry.values()));
+  }
+
+  groupToDosByDate(toDos: IToDo[]) {
+    const sortedToDos = toDos.sort(
       (a, b) => Date.parse(a.dueDate) - Date.parse(b.dueDate)
+    );
+    return Object.entries(
+      sortedToDos.reduce((toDos, toDo) => {
+        const dueDate = toDo.dueDate.split("T")[0];
+        toDos[dueDate] = toDos[dueDate] ? [...toDos[dueDate], toDo] : [toDo];
+        return toDos;
+      }, {} as { [key: string]: IToDo[] })
     );
   }
 
@@ -31,6 +47,7 @@ class ToDoStore {
           //this.toDos.push(toDo);
         });
       });
+      console.log(this.groupToDosByDate(toDos));
     } catch (error) {
       runInAction("logging errors", () => {
         this.loadingInitial = false;

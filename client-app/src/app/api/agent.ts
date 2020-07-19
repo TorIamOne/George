@@ -11,7 +11,7 @@ const sleep = (ms: number) => (response: AxiosResponse) =>
   );
 
 const requests = {
-  get: (url: string) => axios.get(url).then(sleep(2000)).then(responseBody),
+  get: (url: string) => axios.get(url).then(sleep(500)).then(responseBody),
   post: (url: string, body: {}) =>
     axios.post(url, body).then(sleep(1000)).then(responseBody),
   put: (url: string, body: {}) =>
@@ -21,7 +21,7 @@ const requests = {
 
 const ToDos = {
   list: (): Promise<IToDo[]> => requests.get("/todos"),
-  details: (id: string) => requests.del(`/todos/${id}`),
+  details: (id: string) => requests.get(`/todos/${id}`),
   create: (toDo: IToDo) => requests.post("/todos", toDo),
   update: (toDo: IToDo) => requests.put(`/todos/${toDo.id}`, toDo),
   delete: (id: string) => requests.del(`/todos/${id}`),

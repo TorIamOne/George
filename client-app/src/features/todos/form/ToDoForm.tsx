@@ -1,5 +1,5 @@
 import React, { useState, FormEvent, useContext, useEffect } from "react";
-import { Segment, Form, Button } from "semantic-ui-react";
+import { Segment, Form, Button, Grid } from "semantic-ui-react";
 import { IToDo } from "../../../app/models/toDo";
 import { v4 as uuid } from "uuid";
 import ToDoStore from "../../../app/stores/toDoStore";
@@ -78,95 +78,99 @@ const ToDoForm: React.FC<RouteComponentProps<DetailParams>> = ({
   };
 
   return (
-    <Segment>
-      <Form onSubmit={handleSubmit}>
-        <Form.Input
-          onChange={handleInputChange}
-          name="title"
-          placeholder="Title"
-          value={toDo.title}
-        />
-        <Form.TextArea
-          onChange={handleInputChange}
-          name="description"
-          placeholder="Description"
-          value={toDo.description}
-        />
-        <Form.Input
-          onChange={handleInputChange}
-          name="category"
-          placeholder="Category"
-          value={toDo.category}
-        />
-        <Form.Input
-          onChange={handleInputChange}
-          name="dueDate"
-          //type="datetime-local"
-          placeholder="DueDate"
-          value={toDo.dueDate}
-        />
-        <Form.Input
-          onChange={handleInputChange}
-          name="city"
-          placeholder="City"
-          value={toDo.city}
-        />
-        <Form.Input
-          onChange={handleInputChange}
-          name="location"
-          placeholder="Location"
-          value={toDo.location}
-        />
-        <Form.Input
-          onChange={handleInputChange}
-          name="createdBy"
-          placeholder="CreatedBy"
-          value={toDo.createdBy}
-        />
-        <Form.Input
-          onChange={handleInputChange}
-          name="assignedTo"
-          placeholder="AssignedTo"
-          value={toDo.assignedTo}
-        />
-        <Form.Input
-          onChange={handleInputChange}
-          name="status"
-          placeholder="Status"
-          value={toDo.status}
-        />
-        <Form.Input
-          onChange={handleInputChange}
-          name="received"
-          placeholder="Received"
-          value={toDo.received}
-        />
-        <Form.Input
-          onChange={handleInputChange}
-          name="urgency"
-          placeholder="Urgency"
-          value={toDo.urgency}
-        />
-        {/* <Button.Group widths="4"> */}
-        <Button
-          loading={submitting}
-          //onClick={() => setEditMode(true)}
-          basic
-          color="blue"
-          content="Save"
-          type="submit"
-          align="right"
-        />
-        <Button
-          onClick={() => history.push("/todos")}
-          basic
-          color="grey"
-          content="Cancel"
-          align="right"
-        />
-        {/* </Button.Group> */}
-      </Form>
-    </Segment>
+    <Grid>
+      <Grid.Column width="10">
+        <Segment>
+          <Form onSubmit={handleSubmit}>
+            <Form.Input
+              onChange={handleInputChange}
+              name="title"
+              placeholder="Title"
+              value={toDo.title}
+            />
+            <Form.TextArea
+              onChange={handleInputChange}
+              name="description"
+              placeholder="Description"
+              value={toDo.description}
+            />
+            <Form.Input
+              onChange={handleInputChange}
+              name="category"
+              placeholder="Category"
+              value={toDo.category}
+            />
+            <Form.Input
+              onChange={handleInputChange}
+              name="dueDate"
+              //type="datetime-local"
+              placeholder="DueDate"
+              value={toDo.dueDate}
+            />
+            <Form.Input
+              onChange={handleInputChange}
+              name="city"
+              placeholder="City"
+              value={toDo.city}
+            />
+            <Form.Input
+              onChange={handleInputChange}
+              name="location"
+              placeholder="Location"
+              value={toDo.location}
+            />
+            <Form.Input
+              onChange={handleInputChange}
+              name="createdBy"
+              placeholder="CreatedBy"
+              value={toDo.createdBy}
+            />
+            <Form.Input
+              onChange={handleInputChange}
+              name="assignedTo"
+              placeholder="AssignedTo"
+              value={toDo.assignedTo}
+            />
+            <Form.Input
+              onChange={handleInputChange}
+              name="status"
+              placeholder="Status"
+              value={toDo.status}
+            />
+            <Form.Input
+              onChange={handleInputChange}
+              name="received"
+              placeholder="Received"
+              value={toDo.received}
+            />
+            <Form.Input
+              onChange={handleInputChange}
+              name="urgency"
+              placeholder="Urgency"
+              value={toDo.urgency}
+            />
+            {/* <Button.Group widths="4"> */}
+            <Button
+              loading={submitting}
+              //onClick={() => setEditMode(true)}
+              basic
+              color="blue"
+              content="Save"
+              type="submit"
+              align="right"
+            />
+            <Button
+              onClick={() => history.push("/todos")}
+              basic
+              color="grey"
+              content="Cancel"
+              align="right"
+            />
+            {/* </Button.Group> */}
+          </Form>
+        </Segment>
+      </Grid.Column>
+    </Grid>
   );
 };
 
