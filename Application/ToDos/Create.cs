@@ -2,6 +2,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Domain;
+using FluentValidation;
 using MediatR;
 using Persistence;
 
@@ -11,7 +12,7 @@ namespace Application.ToDos
     {
         public class Command : IRequest
         {
-            public string Id { get; set; }
+            public Guid Id { get; set; }
             public string Title { get; set; }
             public string Description { get; set; }
             public int Category { get; set; }
@@ -26,6 +27,18 @@ namespace Application.ToDos
             public int Urgency { get; set; }
         }
 
+        public class CommandValidator : AbstractValidator<Command>
+        {
+            public CommandValidator()
+            {
+                RuleFor(x => x.Title).NotEmpty();
+                RuleFor(x => x.Description).NotEmpty();
+                RuleFor(x => x.DueDate).NotEmpty();
+                RuleFor(x => x.CreatedBy).NotEmpty();
+                RuleFor(x => x.Location).NotEmpty();
+
+            }
+        }
         public class Handler : IRequestHandler<Command>
         {
             private readonly DataContext _context;

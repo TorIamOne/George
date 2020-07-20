@@ -1,6 +1,8 @@
 using System;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
+using Application.Errors;
 using Domain;
 using MediatR;
 using Persistence;
@@ -11,7 +13,7 @@ namespace Application.ToDos
     {
         public class Query : IRequest<ToDo>
         {
-            public string Id { get; set; }
+            public Guid Id { get; set; }
         }
 
         public class Handler : IRequestHandler<Query, ToDo>
@@ -24,7 +26,12 @@ namespace Application.ToDos
 
             public async Task<ToDo> Handle(Query request, CancellationToken cancellationToken)
             {
+                //throw new Exception("error 500 George sent it");
                 var toDo = await _context.ToDos.FindAsync(request.Id);
+
+                if (toDo == null)
+                    throw new RestException(HttpStatusCode.NotFound, new
+                    { toDo = "Siden ikke funnet" });
 
                 return toDo;
             }

@@ -47,7 +47,6 @@ class ToDoStore {
           //this.toDos.push(toDo);
         });
       });
-      console.log(this.groupToDosByDate(toDos));
     } catch (error) {
       runInAction("logging errors", () => {
         this.loadingInitial = false;
@@ -70,8 +69,8 @@ class ToDoStore {
       } catch (error) {
         runInAction("get task errors", () => {
           this.loadingInitial = false;
-          console.log(error);
         });
+        console.log(error);
       }
     }
   };

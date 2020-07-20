@@ -1,6 +1,8 @@
 using System;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
+using Application.Errors;
 using MediatR;
 using Persistence;
 
@@ -23,12 +25,13 @@ namespace Application.ToDos
 
             public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
             {
-                var todo = await _context.ToDos.FindAsync(request.Id);
+                var toDo = await _context.ToDos.FindAsync(request.Id);
 
-                if (todo == null)
-                    throw new Exception("Could not find task");
+                if (toDo == null)
+                    throw new RestException(HttpStatusCode.NotFound, new
+                    { toDo = "Not found" });
 
-                _context.Remove(todo);
+                _context.Remove(toDo);
 
                 var success = await _context.SaveChangesAsync() > 0;
 

@@ -1,6 +1,9 @@
 using System;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
+using Application.Errors;
+using FluentValidation;
 using MediatR;
 using Persistence;
 
@@ -25,6 +28,18 @@ namespace Application.ToDos
             public int Urgency { get; set; }
         }
 
+        public class CommandValidator : AbstractValidator<Command>
+        {
+            public CommandValidator()
+            {
+                RuleFor(x => x.Title).NotEmpty();
+                RuleFor(x => x.Description).NotEmpty();
+                RuleFor(x => x.DueDate).NotEmpty();
+                RuleFor(x => x.CreatedBy).NotEmpty();
+                RuleFor(x => x.Location).NotEmpty();
+
+            }
+        }
         public class Handler : IRequestHandler<Command>
         {
             private readonly DataContext _context;
@@ -38,7 +53,8 @@ namespace Application.ToDos
                 var toDo = await _context.ToDos.FindAsync(request.Id);
 
                 if (toDo == null)
-                    throw new Exception("Could not find Task");
+                    throw new RestException(HttpStatusCode.NotFound, new
+                    { toDo = "Siden ikke funnet" });
 
                 toDo.Title = request.Title ?? toDo.Title;
                 toDo.Description = request.Description ?? toDo.Description;

@@ -14,16 +14,18 @@ interface DetailParams {
 }
 const ToDoDetails: React.FC<RouteComponentProps<DetailParams>> = ({
   match,
+  history,
 }) => {
   const toDoStore = useContext(ToDoStore);
   const { selectedToDo: toDo, loadToDo, loadingInitial } = toDoStore;
 
   useEffect(() => {
     loadToDo(match.params.id);
-  }, [loadToDo, match.params.id]);
+  }, [loadToDo, match.params.id, history]);
 
-  if (loadingInitial || !toDo)
-    return <LoadingComponent content="Loading tasks..." />;
+  if (loadingInitial) return <LoadingComponent content="Loading tasks..." />;
+
+  if (!toDo) return <h2>Ikke funnet</h2>;
   return (
     <Grid>
       <Grid.Column width={10}>
