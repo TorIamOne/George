@@ -2,6 +2,8 @@ import { observable, action, computed, configure, runInAction } from "mobx";
 import { createContext, SyntheticEvent } from "react";
 import { IToDo } from "../models/toDo";
 import agent from "../api/agent";
+import { history } from "../..";
+import { toast } from "react-toastify";
 
 configure({ enforceActions: "always" });
 
@@ -24,11 +26,11 @@ class ToDoStore {
 
   groupToDosByDate(toDos: IToDo[]) {
     const sortedToDos = toDos.sort(
-      (a, b) => Date.parse(a.dueDate) - Date.parse(b.dueDate)
+      (a, b) => a.dueDate.getTime() - b.dueDate.getTime()
     );
     return Object.entries(
       sortedToDos.reduce((toDos, toDo) => {
-        const dueDate = toDo.dueDate.split("T")[0];
+        const dueDate = toDo.dueDate.toISOString().split("T")[0];
         toDos[dueDate] = toDos[dueDate] ? [...toDos[dueDate], toDo] : [toDo];
         return toDos;
       }, {} as { [key: string]: IToDo[] })
@@ -41,10 +43,9 @@ class ToDoStore {
       const toDos = await agent.ToDos.list();
       runInAction("loading toDos", () => {
         toDos.forEach((toDo) => {
-          toDo.dueDate = toDo.dueDate.split(".")[0];
+          toDo.dueDate = new Date(toDo.dueDate); //commented to see what happens
           this.toDoRegistry.set(toDo.id, toDo);
           this.loadingInitial = false;
-          //this.toDos.push(toDo);
         });
       });
     } catch (error) {
@@ -58,14 +59,19 @@ class ToDoStore {
     let toDo = this.getToDo(id);
     if (toDo) {
       this.selectedToDo = toDo;
+      //console.log(toDo);
+      return toDo;
     } else {
       this.loadingInitial = true;
       try {
         toDo = await agent.ToDos.details(id);
-        runInAction("getting tasks. No id found", () => {
+        runInAction("getting tasks", () => {
+          toDo.dueDate = new Date(toDo.dueDate);
           this.selectedToDo = toDo;
+          this.toDoRegistry.set(toDo.id, toDo);
           this.loadingInitial = false;
         });
+        return this.selectedToDo;
       } catch (error) {
         runInAction("get task errors", () => {
           this.loadingInitial = false;
@@ -106,11 +112,13 @@ class ToDoStore {
         this.toDoRegistry.set(toDo.id, toDo);
         this.submitting = false;
       });
+      history.push(`/todos/${toDo.id}`);
     } catch (error) {
       runInAction("logging errors", () => {
         this.submitting = false;
-        console.log(error);
       });
+      toast.error("Feil med submitting data");
+      console.log(error.response);
     }
   };
 
@@ -123,11 +131,13 @@ class ToDoStore {
         this.selectedToDo = toDo;
         this.submitting = false;
       });
+      history.push(`/todos/${toDo.id}`);
     } catch (error) {
       runInAction("logging errors", () => {
         this.submitting = false;
-        console.log(error);
       });
+      toast.error("Feil med editing data");
+      console.log(error.response);
     }
   };
 

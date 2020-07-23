@@ -1,6 +1,7 @@
 import React from "react";
 import { Segment, Grid, Icon } from "semantic-ui-react";
 import { IToDo } from "../../../app/models/toDo";
+import { format } from "date-fns";
 
 const ToDoDetailInfo: React.FC<{ toDo: IToDo }> = ({ toDo }) => {
   return (
@@ -21,7 +22,12 @@ const ToDoDetailInfo: React.FC<{ toDo: IToDo }> = ({ toDo }) => {
             <Icon name="calendar" size="large" color="blue" />
           </Grid.Column>
           <Grid.Column width={15}>
-            <span>Forespurt Dato: {toDo.createdDate}</span>
+            <span>Forespurt Dato: {toDo.createdDate} </span>
+            <span>
+              <br />
+              <b>Frist Dato: </b> {format(toDo.dueDate, "eeee do MMMM")} at
+              {format(toDo.dueDate, "HH:mm")}
+            </span>
           </Grid.Column>
         </Grid>
       </Segment>

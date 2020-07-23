@@ -2,6 +2,7 @@ import React from "react";
 import { Item, Button, Label, Segment, Icon } from "semantic-ui-react";
 import { Link } from "react-router-dom";
 import { IToDo } from "../../../app/models/toDo";
+import { format } from "date-fns";
 
 const ToDoListItem: React.FC<{ toDo: IToDo }> = ({ toDo }) => {
   return (
@@ -24,7 +25,7 @@ const ToDoListItem: React.FC<{ toDo: IToDo }> = ({ toDo }) => {
         </Item.Group>
       </Segment>
       <Segment>
-        <Icon name="time" /> {toDo.dueDate}
+        <Icon name="time" /> {format(toDo.dueDate, "HH:mm")}
         <Icon name="marker" /> {toDo.location}, {toDo.city}
       </Segment>
       <Segment secondary>

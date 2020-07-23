@@ -2,6 +2,8 @@ import React from "react";
 import { Segment, Item, Header, Button, Image } from "semantic-ui-react";
 import { IToDo } from "../../../app/models/toDo";
 import { observer } from "mobx-react-lite";
+import { Link } from "react-router-dom";
+import { format } from "date-fns";
 
 const toDoImageStyle = {
   filter: "brightness(30%)",
@@ -31,7 +33,7 @@ const ToDoDetailHeader: React.FC<{ toDo: IToDo }> = ({ toDo }) => {
                   style={{ color: "white" }}
                 />
                 <p>Frist</p>
-                {toDo.dueDate}
+                {format(toDo.dueDate, "eeee do MMMM")}
                 <p>
                   Anmoder: <strong>Pepe, {toDo.createdBy}</strong>
                 </p>
@@ -43,7 +45,12 @@ const ToDoDetailHeader: React.FC<{ toDo: IToDo }> = ({ toDo }) => {
       <Segment clearing attached="bottom">
         <Button color="blue">Ferdigstilt</Button>
         <Button>Avrit fullførelse</Button>
-        <Button color="orange" floated="right">
+        <Button
+          as={Link}
+          to={`/manage/${toDo.id}`}
+          color="orange"
+          floated="right"
+        >
           Redigerer
         </Button>
       </Segment>
