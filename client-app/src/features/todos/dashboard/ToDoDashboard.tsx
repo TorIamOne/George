@@ -3,17 +3,17 @@ import { Grid, GridColumn } from "semantic-ui-react";
 import ToDoList from "./ToDoList";
 import { observer } from "mobx-react-lite";
 import LoadingComponent from "../../../app/layout/LoadingComponent";
-import ToDoStore from "../../../app/stores/toDoStore";
+import { CentralStoreContext } from "../../../app/stores/centralStore";
 
 const ToDoDashboard: React.FC = () => {
-  const toDoStore = useContext(ToDoStore);
+  const centralStore = useContext(CentralStoreContext);
+  const { loadToDos, loadingInitial } = centralStore.toDoStore;
 
   useEffect(() => {
-    toDoStore.loadToDos();
-  }, [toDoStore]);
+    loadToDos();
+  }, [loadToDos]);
 
-  if (toDoStore.loadingInitial)
-    return <LoadingComponent content="Loading..." />;
+  if (loadingInitial) return <LoadingComponent content="Loading..." />;
   return (
     <Grid>
       <Grid.Column width={8}>

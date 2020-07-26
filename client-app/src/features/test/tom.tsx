@@ -8,7 +8,7 @@ const Tom = () => {
       <h1>Tom, about2, about</h1>
 
       <h3>
-        Go to <Link to="/activities">Activities</Link>
+        Go to <Link to="/todos">Oppgaver</Link>
       </h3>
     </Container>
   );

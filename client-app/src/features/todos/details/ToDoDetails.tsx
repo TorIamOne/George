@@ -1,13 +1,13 @@
 import React, { useContext, useEffect } from "react";
 import { Grid } from "semantic-ui-react";
 import { observer } from "mobx-react-lite";
-import ToDoStore from "../../../app/stores/toDoStore";
 import { RouteComponentProps } from "react-router-dom";
 import LoadingComponent from "../../../app/layout/LoadingComponent";
 import ToDoDetailHeader from "./ToDoDetailHeader";
 import ToDoDetailSideBar from "./ToDoDetailSideBar";
 import ToDoDetailInfo from "./ToDoDetailInfo";
 import ToDoDetailChat from "./ToDoDetailChat";
+import { CentralStoreContext } from "../../../app/stores/centralStore";
 
 interface DetailParams {
   id: string;
@@ -16,8 +16,14 @@ const ToDoDetails: React.FC<RouteComponentProps<DetailParams>> = ({
   match,
   history,
 }) => {
-  const toDoStore = useContext(ToDoStore);
-  const { selectedToDo: toDo, loadToDo, loadingInitial } = toDoStore;
+  const centralStore = useContext(CentralStoreContext);
+  const {
+    selectedToDo: toDo,
+    loadToDo,
+    loadingInitial,
+  } = centralStore.toDoStore;
+  // const toDoStore = useContext(ToDoStore);
+  // const { selectedToDo: toDo, loadToDo, loadingInitial } = toDoStore;
 
   useEffect(() => {
     loadToDo(match.params.id);

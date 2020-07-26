@@ -1,13 +1,17 @@
-import { observable, action, computed, configure, runInAction } from "mobx";
-import { createContext, SyntheticEvent } from "react";
+import { observable, action, computed, runInAction } from "mobx";
+import { SyntheticEvent } from "react";
 import { IToDo } from "../models/toDo";
 import agent from "../api/agent";
 import { history } from "../..";
 import { toast } from "react-toastify";
+import { CentralStore } from "./centralStore";
 
-configure({ enforceActions: "always" });
+export default class ToDoStore {
+  centralStore: CentralStore;
+  constructor(centralStore: CentralStore) {
+    this.centralStore = centralStore;
+  }
 
-class ToDoStore {
   @observable toDoRegistry = new Map();
   @observable selectedToDo: IToDo | null = null;
   @observable loadingInitial = false;
@@ -165,5 +169,3 @@ class ToDoStore {
     }
   };
 }
-
-export default createContext(new ToDoStore());

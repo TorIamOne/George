@@ -2,7 +2,6 @@ import React, { useState, useContext, useEffect } from "react";
 import { Segment, Form, Button, Grid } from "semantic-ui-react";
 import { ToDoFormValues } from "../../../app/models/toDo";
 import { v4 as uuid } from "uuid";
-import ToDoStore from "../../../app/stores/toDoStore";
 import { observer } from "mobx-react-lite";
 import { RouteComponentProps } from "react-router-dom";
 import { Form as FinalForm, Field } from "react-final-form";
@@ -18,6 +17,7 @@ import {
   composeValidators,
   hasLengthGreaterThan,
 } from "revalidate";
+import { CentralStoreContext } from "../../../app/stores/centralStore";
 
 const validate = combineValidators({
   title: isRequired({ message: "Tittel er påkrevet" }),
@@ -41,8 +41,10 @@ const ToDoForm: React.FC<RouteComponentProps<DetailParams>> = ({
   match,
   history,
 }) => {
-  const toDoStore = useContext(ToDoStore);
-  const { createToDo, editToDo, submitting, loadToDo } = toDoStore;
+  const centralStore = useContext(CentralStoreContext);
+  const { createToDo, editToDo, submitting, loadToDo } = centralStore.toDoStore;
+  // const toDoStore = useContext(ToDoStore);
+  // const { createToDo, editToDo, submitting, loadToDo } = toDoStore;
 
   const [toDo, setToDo] = useState(new ToDoFormValues());
   const [loading, setLoading] = useState(false);
